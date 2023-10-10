@@ -1,5 +1,3 @@
-let taskList = [];
-
 const getTodoList = async () => {
     return await fetch("http://localhost:8080/api/tasks")
 }
