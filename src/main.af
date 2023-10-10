@@ -5,17 +5,13 @@ import GET, POST, PUT, DELETE from "HTTP/Endpoints";
 import Content from "Web/Content";
 import string from "String";
 import List from "Collections";
-import {getList, getInt, getString} from "./src/JSON/Parse" under json;
-import {print} from "String" under str;
-import DateTime from "DateTime";
-import {Now} from "DateTime" under dt;
-import JSONObject, JSONType from "./src/JSON";
+import {getList, getInt, getString} from "JSON/Parse" under json;
+import JSONObject, JSONValue from "JSON";
 import File from "files";
 import {createFile} from "files" under fs;
 import Result from "Utils/Result";
 import {accept, reject} from "Utils/Result" under res;
 import Random from "math";
-import Bind from "Web/Content/Bind";
 
 class GetTask signs Content {
 	Result render(adr id) {
@@ -82,7 +78,6 @@ class PostTask signs Content {
 		obj.addInt("id", id);
 		obj.addString("name", name);
 		tasks.pushBack(obj.toString());
-
 		let saveFile = fs.createFile("./data/todo.json");
 
 		if saveFile == NULL {
@@ -213,7 +208,7 @@ class TodoList signs Server {
 };
 
 int main(){
-	let server = TodoList();
+	let server = new TodoList();
 	server.listen();
 	return 0;
 };
