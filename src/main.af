@@ -153,39 +153,40 @@ class DeleteTask signs Content {
 	};
 };
 
+import {printHex} from "io" under io;
+import {print} from "String" under str;
+
 class Index signs Content {
-	Result render() {
+	Index init() {
 		my.loadFile("./html/index.html");
-		my.content = my.cleanContent;
-		let responce = new HTTPResponce(my.content.cstr(), "200", "OK");
-		responce.addHeader("Content-Type", "text/html");
-		return res.accept(responce);
+		return my;
 	};
 };
 
-class IndexJS signs Content {
-	Result render() {
-		my.loadFile("./js/index.js");
-		my.content = my.cleanContent;
-		let responce = new HTTPResponce(my.content.cstr(), "200", "OK");
-		responce.addHeader("Content-Type", "text/javascript");
-		return res.accept(responce);
+class PlainContent signs Content {
+	PlainContent init(adr path) {
+		my.loadFile(path);
+		return my;
 	};
 };
 
 class TodoList signs Server {
 	Index indexMarkup = new Index();
-	IndexJS indexJS = new IndexJS();
+	PlainContent indexJS = new PlainContent("./js/index.js");
 	GetTask getTask = new GetTask();
 	PostTask postTask = new PostTask();
 	DeleteTask deleteTask = new DeleteTask();
 
 	Result home() : GET("/") {
-		return my.indexMarkup.render();
+		let responce = new HTTPResponce(my.indexMarkup.render(), "200", "OK");
+		responce.addHeader("Content-Type", "text/html");
+		return res.accept(responce);
 	};
 
 	Result indexJavaScript() : GET("/js/index.js") {
-		return my.indexJS.render();
+		let responce = new HTTPResponce(my.indexJS.render(), "200", "OK");
+		responce.addHeader("Content-Type", "text/javascript");
+		return res.accept(responce);
 	};
 
 	Result getTasks(HTTPMessage message) : GET("/api/tasks") {

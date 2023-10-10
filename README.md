@@ -44,7 +44,6 @@ To run the application, follow these steps:
 ## Directory Structure
 
 - `./data/todo.json`: JSON file used for storing tasks.
-- `./src/JSON`: Contains utility functions for parsing JSON data.
 
 ## Usage
 

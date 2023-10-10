@@ -23,7 +23,8 @@ const fillList = async () => {
         const text = document.createElement("span")
         text.innerText = `\t${task.name}`
         const deleteButton = document.createElement("button")
-        deleteButton.innerText = "Delete"
+        deleteButton.innerText = "x"
+        deleteButton.classList.add("delete-button");
         deleteButton.addEventListener("click", async () => {
             await deleteTodoList(task.id)
             fillList()

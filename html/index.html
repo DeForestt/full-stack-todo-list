@@ -3,7 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Todo List</title>
-    <script src="./js/index.js"></script>
+    <style>
+        .delete-button {
+            color: red;
+            margin-left: 10px;
+            cursor: pointer;
+            /*clear background*/
+            background-color: transparent;
+            border: none;
+            outline: none;
+            /*bold text*/
+            font-weight: bold;
+        }
+
+        .delete-button:hover {
+            color: darkred;
+            background-color: gray;
+            font-size: large;
+        }
+    </style>
+    <script src="http://localhost:8080/js/index.js"></script>
 </head>
 <body>
     <input id="name" type="text" placeholder="Add a new todo">
