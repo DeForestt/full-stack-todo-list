@@ -1,0 +1,29 @@
+.needs <std>
+import File from "files";
+import { createFile } from "files" under fs;
+import string from "String";
+import HTTPResponce from "HTTP";
+import Result from "Utils/Result";
+import {accept, reject} from "Utils/Result" under res;
+import List from "Collections";
+
+export Result save(List tasks){
+    	let saveFile = fs.createFile("./data/todo.json");
+		
+		if saveFile == NULL {
+			return res.reject("Failed to create file");
+		};
+
+		saveFile.write("{\"tasks\":[");
+		for int i = 0; i < tasks.getCount(); i++ {
+			string s = tasks.get(i);
+			saveFile.write(s.cstr());
+			if i != tasks.getCount() - 1 {
+				saveFile.write(",");
+			};
+		};
+
+		saveFile.write("]}");
+        saveFile.close();
+        return res.accept(new HTTPResponce("Update Saved", "200", "OK"));
+};

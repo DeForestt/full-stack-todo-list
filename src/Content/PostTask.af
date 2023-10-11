@@ -1,0 +1,31 @@
+.needs <std>
+import Content from "Web/Content";
+import Result from "Utils/Result";
+import { accept, reject } from "Utils/Result" under res;
+import HTTPResponce from "HTTP";
+import JSONObject from "JSON";
+import {getInt, getList, getString} from "JSON/Parse" under json;
+import string from "String";
+import List from "Collections";
+import Random from "math";
+import {save} from "./src/Data"under data ;
+
+class PostTask signs Content {
+	Result render(string body) {
+		my.loadFile("./data/todo.json");
+		my.content = my.cleanContent;
+		List tasks = json.getList("tasks", my.content);
+		string name = json.getString("name", body);
+		int id = Random().nextInt(10000);
+		JSONObject obj = new JSONObject();
+		obj.addInt("id", id);
+		obj.addString("name", name);
+		tasks.pushBack(obj.toString());
+		
+        let saved = data.save(tasks);
+        if saved.hasError() {
+            return saved;
+        };
+		return res.accept(new HTTPResponce(obj.toString().cstr(), "200", "OK"));
+	};
+};

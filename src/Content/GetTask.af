@@ -1,0 +1,64 @@
+.needs <std>
+
+import Content from "Web/Content";
+import Result from "Utils/Result";
+import { accept, reject } from "Utils/Result" under res;
+import HTTPResponce from "HTTP";
+import {getInt, getList} from "JSON/Parse" under json;
+import string from "String";
+import List from "Collections";
+
+
+class GetTask signs Content {
+	Result render(adr id) {
+		my.loadFile("./data/todo.json");
+		my.content = my.cleanContent;
+
+		if id == NULL {
+			let responce = new HTTPResponce(my.content.cstr(), "200", "OK");
+			responce.addHeader("Content-Type", "application/json");
+			return res.accept(responce);
+		};
+
+		// find the task with id;
+		string id = id;
+		int id = id.toInt().value(
+			[] => return -1
+		);
+
+		if (id < 0) | (id >= my.content.len()) {
+			let responce = new HTTPResponce("Task not found", "404", "Not Found");
+			responce.addHeader("Content-Type", "text/plain");
+			return res.accept(responce);
+		};
+		
+		List content = json.getList("tasks", my.content);
+
+		if content == NULL 
+			res.reject("tasks returned NULL Content List");
+
+
+		if content.getCount() == 0 {
+			let responce = new HTTPResponce("Task not found", "404", "Not Found");
+			responce.addHeader("Content-Type", "text/plain");
+			return res.accept(responce);
+		};
+
+		bool found = false;
+		for int i = 0; i < content.getCount(); i++ {
+			my.content = content.get(i);
+			int taskID = json.getInt("id", my.content);
+			if taskID == id {
+				let responce = new HTTPResponce(my.content.cstr(), "200", "OK");
+				responce.addHeader("Content-Type", "application/json");
+				return res.accept(responce);
+			};
+		};
+
+		if !found {
+			let responce = new HTTPResponce("Task not found", "404", "Not Found");
+			responce.addHeader("Content-Type", "text/plain");
+			return res.accept(responce);
+		};
+	};
+};

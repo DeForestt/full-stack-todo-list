@@ -1,0 +1,9 @@
+.needs <std>
+import Content from "Web/Content";
+
+class PlainContent signs Content {
+	PlainContent init(adr path) {
+		my.loadFile(path);
+		return my;
+	};
+};
