@@ -16,7 +16,6 @@ const fillList = async () => {
     // fill the taskList with the 'tasks' from the todoListJson
     taskList = todoListJson.tasks;
 
-    console.log(taskList);
     list.innerHTML = ""
     taskList.forEach(task => {
         const li = document.createElement("li")
