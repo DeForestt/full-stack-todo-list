@@ -22,7 +22,7 @@ class GetTask signs Content {
 
 		// find the task with id;
 		string id = id;
-		int id = id.toInt().value(
+		int id = id.trim('$').toInt().value(
 			[] => return -1
 		);
 
