@@ -13,8 +13,11 @@ const fillList = async () => {
     const todoListJson = await todoList.json();
     const list = document.getElementById("list");
     
-    // fill the taskList with the 'tasks' from the todoListJson
     taskList = todoListJson.tasks;
+
+    taskList.sort((a, b) => {
+        return new Date(a.due) - new Date(b.due);
+    });
 
     list.innerHTML = ""
     taskList.forEach(task => {
@@ -58,11 +61,18 @@ const postTodoList = async (task) => {
 const addNew = async () => {
     const name = document.getElementById("name").value;
     let due = document.getElementById("due").value; 
+
+    if (due === "") {
+        alert("Please enter a due date");
+        return;
+    }
+
     due = new Date(due).toISOString();
     if (name === "") {
         alert("Please enter a task name");
         return;
     }
+
     const task = {
         name,
         due,
@@ -70,6 +80,7 @@ const addNew = async () => {
     await postTodoList(task);
     fillList();
     document.getElementById("name").value = "";
+    document.getElementById("due").value = "";
 };
 
 fillList()
