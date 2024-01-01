@@ -4,6 +4,25 @@
     <meta charset="UTF-8">
     <title>Todo List</title>
     <style>
+        .due-date {
+            margin-left: 10px;
+            font-size: small;
+            color: gray;
+        }
+
+        .todo-item {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid gray;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .over-due {
+            color: red;
+        }
+
         .delete-button {
             color: red;
             margin-left: 10px;
@@ -26,6 +45,7 @@
 </head>
 <body>
     <input id="name" type="text" placeholder="Add a new todo">
+    <input id="due" type="date">
     <button onclick="addNew()">Submit</button>
     <h1>Todo List</h1>
     <ul id="list">

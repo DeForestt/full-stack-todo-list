@@ -8,7 +8,7 @@ import {getInt, getList, getString} from "JSON/Parse" under json;
 import string from "String";
 import List from "Collections";
 import Random from "math";
-import {save} from "./src/Data"under data ;
+import {save} from "./src/Data"under data;
 
 class PostTask signs Content {
 	Result render(string body) {
@@ -16,9 +16,11 @@ class PostTask signs Content {
 		my.content = my.cleanContent;
 		List tasks = json.getList("tasks", my.content);
 		string name = json.getString("name", body);
+		string due = json.getString("due", body);
 		int id = Random().nextInt(10000);
 		JSONObject obj = new JSONObject();
 		obj.addInt("id", id);
+		obj.addString("due", due);
 		obj.addString("name", name);
 		tasks.pushBack(obj.toString());
 		

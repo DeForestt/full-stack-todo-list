@@ -21,6 +21,12 @@ const fillList = async () => {
         const li = document.createElement("li")
         const text = document.createElement("span")
         text.innerText = `\t${task.name}`
+
+        date = new Date(task.due)
+        const due = document.createElement("span");
+        due.classList.add("due-date");
+        due.innerText = `\t${date.toLocaleDateString()}`;
+
         const deleteButton = document.createElement("button")
         deleteButton.innerText = "x"
         deleteButton.classList.add("delete-button");
@@ -30,6 +36,11 @@ const fillList = async () => {
         });
         li.appendChild(deleteButton);
         li.appendChild(text);
+        li.appendChild(due);
+        li.classList.add("todo-item");
+        if (date < new Date()) {
+            li.classList.add("over-due");
+        }
         list.appendChild(li);
     });
 }
@@ -46,12 +57,15 @@ const postTodoList = async (task) => {
 
 const addNew = async () => {
     const name = document.getElementById("name").value;
+    let due = document.getElementById("due").value; 
+    due = new Date(due).toISOString();
     if (name === "") {
         alert("Please enter a task name");
         return;
     }
     const task = {
         name,
+        due,
     }
     await postTodoList(task);
     fillList();
