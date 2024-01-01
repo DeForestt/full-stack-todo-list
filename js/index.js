@@ -55,6 +55,7 @@ const addNew = async () => {
     }
     await postTodoList(task);
     fillList();
+    document.getElementById("name").value = "";
 };
 
 fillList()
