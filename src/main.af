@@ -2,18 +2,18 @@
 import HTTPResponce, HTTPMessage from "HTTP";
 import Server from "HTTP/Server";
 import GET, POST, PUT, DELETE from "HTTP/Endpoints";
+import Endpoints from "HTTP/Endpoint";
 import Content from "Web/Content";
 import string from "String";
 import Result from "Utils/Result";
-import {accept, reject} from "Utils/Result" under res;
+import {accept} from "Utils/Result" under res;
 import GetTask from "./src/Content/GetTask";
 import PostTask from "./src/Content/PostTask"; 
 import DeleteTask from "./src/Content/DeleteTask";
 import Index from "./src/Content/UI/Index";
 import PlainContent from "./src/Content/UI/PlainContent";
+import Map from "Utils/Map";
 
-import {printHex} from "io" under io;
-import {print} from "String" under str;
 
 class TodoList signs Server {
 	Index indexMarkup = new Index();
@@ -34,18 +34,20 @@ class TodoList signs Server {
 		return res.accept(responce);
 	};
 
-	Result getTasks(HTTPMessage message) : GET("/api/tasks") {
-		adr taskID = message.query.get("id");
-		return my.getTask.render(taskID);
-	};
-
-	Result postTasks(HTTPMessage message) : POST("/api/tasks") {
-		return my.postTask.render(message.body);
-	};
-
-	Result deleteTasks(HTTPMessage message) : DELETE("/api/tasks") {
-		adr taskID = message.query.get("id");
-		return my.deleteTask.render(taskID);
+	Map tasks() : Endpoints("/api/tasks") {
+		return {
+			"GET": [TodoList self, HTTPMessage message] => {
+				adr taskID = message.query.get("id");
+				return self.getTask.render(taskID);
+			},
+			"POST": [TodoList self, HTTPMessage message] => {
+				return self.postTask.render(message.body);
+			},
+			"DELETE": [TodoList self, HTTPMessage message] => {
+				adr taskID = message.query.get("id");
+				return self.deleteTask.render(taskID);
+			} 
+		};
 	};
 
 	TodoList init() {
