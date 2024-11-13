@@ -1,6 +1,7 @@
 .needs <std>
 
 import Result from "Utils/Result";
+import Error from "Utils/Error";
 import {accept, reject} from "Utils/Result" under res;
 import List from "Collections";
 import Content from "Web/Content";
@@ -18,7 +19,7 @@ class DeleteTask signs Content {
 		);
 
 		if numericId < 0 {
-			return res.reject(`Invalid id {id}`);
+			return res.reject(new Error(`Invalid id {id}`));
 		};
 
 		my.loadFile("./data/todo.json");
@@ -26,15 +27,15 @@ class DeleteTask signs Content {
 		List tasks = json.getList("tasks", my.content);
 
 		if tasks == NULL {
-			return res.reject("tasks returned NULL Content List");
+			return res.reject(new Error("tasks returned NULL Content List"));
 		};
 
 		if tasks.getCount() == 0 {
-			return res.reject("No tasks found");
+			return res.reject(new Error("No tasks found"));
 		};
 		
 		for int i = 0; i < tasks.getCount(); i++ {
-			my.content = tasks.get(i);
+			my.content = tasks.get(i).expect("Failed to get value");
 			int taskID = json.getInt("id", my.content);
 			if taskID == numericId {
 				tasks.drop(i);

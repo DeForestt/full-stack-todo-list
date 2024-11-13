@@ -6,6 +6,7 @@ import HTTPResponce from "HTTP";
 import JSONObject from "JSON";
 import {getInt, getList, getString} from "JSON/Parse" under json;
 import string from "String";
+import {print} from "String" under str;
 import List from "Collections";
 import Random from "math";
 import {save} from "./src/Data"under data;
@@ -22,12 +23,14 @@ class PostTask signs Content {
 		obj.addInt("id", id);
 		obj.addString("due", due);
 		obj.addString("name", name);
-		tasks.pushBack(obj.toString());
-		
-        let saved = data.save(tasks);
-        if saved.hasError() {
-            return saved;
-        };
+    string item = new string(obj.toString().cstr());
+		tasks.pushBack(item);
+
+    let saved = data.save(tasks);
+    if saved.hasError() {
+        return saved;
+    };
 		return res.accept(new HTTPResponce(obj.toString().cstr(), "200", "OK"));
 	};
 };
+

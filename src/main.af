@@ -1,18 +1,21 @@
 .needs <std>
+import Middleware from "HTTP/Middleware";
 import HTTPResponce, HTTPMessage from "HTTP";
 import Server from "HTTP/Server";
 import GET, POST, PUT, DELETE from "HTTP/Endpoints";
 import Endpoints from "HTTP/Endpoint";
 import Content from "Web/Content";
 import string from "String";
+import {print} from "String" under str;
 import Result from "Utils/Result";
-import {accept} from "Utils/Result" under res;
+import {accept, reject} from "Utils/Result" under res;
 import GetTask from "./src/Content/GetTask";
 import PostTask from "./src/Content/PostTask"; 
 import DeleteTask from "./src/Content/DeleteTask";
 import Index from "./src/Content/UI/Index";
 import PlainContent from "./src/Content/UI/PlainContent";
 import Map from "Utils/Map";
+import Error from "Utils/Error";
 
 
 class TodoList signs Server {
@@ -37,15 +40,19 @@ class TodoList signs Server {
 	Map tasks() : Endpoints("/api/tasks") {
 		return {
 			"GET": [TodoList self, HTTPMessage message] => {
-				adr taskID = message.query.get("id");
-				return self.getTask.render(taskID);
+        adr taskID = message.query.get("id").or(NULL);
+        return self.getTask.render(taskID)
 			},
 			"POST": [TodoList self, HTTPMessage message] => {
+        str.print("Post Task");
 				return self.postTask.render(message.body);
 			},
 			"DELETE": [TodoList self, HTTPMessage message] => {
-				adr taskID = message.query.get("id");
-				return self.deleteTask.render(taskID);
+        str.print("Delete Task");
+			    return message.query.get("id").match({
+            "some": [adr taskID, TodoList this] => this.deleteTask.render(taskID),
+            "none": [] => res.reject(Error("ID not passed")) 
+          }, self);
 			} 
 		};
 	};

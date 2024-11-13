@@ -5,14 +5,21 @@ import Result from "Utils/Result";
 import { accept, reject } from "Utils/Result" under res;
 import HTTPResponce from "HTTP";
 import {getInt, getList} from "JSON/Parse" under json;
+import Error from "Utils/Error";
 import string from "String";
 import List from "Collections";
+import Map from "Utils/Map";
+import {print} from "String" under str;
 
 
 class GetTask signs Content {
+  GetTask init() {
+    return my;
+  };
+
+  
 	Result render(adr id) {
 		my.loadFile("./data/todo.json");
-		my.content = my.cleanContent;
 
 		if id == NULL {
 			let responce = new HTTPResponce(my.content.cstr(), "200", "OK");
@@ -31,13 +38,15 @@ class GetTask signs Content {
 			responce.addHeader("Content-Type", "text/plain");
 			return res.accept(responce);
 		};
+
+    str.print("Get here");
 		
 		List content = json.getList("tasks", my.content);
 
 		if content == NULL 
-			res.reject("tasks returned NULL Content List");
+			res.reject(new Error("tasks returned NULL Content List"));
 
-
+    str.print("get here");
 		if content.getCount() == 0 {
 			let responce = new HTTPResponce("Task not found", "404", "Not Found");
 			responce.addHeader("Content-Type", "text/plain");
@@ -46,7 +55,10 @@ class GetTask signs Content {
 
 		bool found = false;
 		for int i = 0; i < content.getCount(); i++ {
-			my.content = content.get(i);
+			my.content = content.get(i).match({
+        "ok": [string c] => return c,
+        "_": [] => panic("error")
+        });
 			int taskID = json.getInt("id", my.content);
 			if taskID == id {
 				let responce = new HTTPResponce(my.content.cstr(), "200", "OK");
