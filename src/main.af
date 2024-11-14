@@ -40,20 +40,21 @@ class TodoList signs Server {
 
 	Map tasks() : Endpoints("/api/tasks/:*") {
 		return {
+
 			"GET": [TodoList self, HTTPMessage __message, ? any id] => {
 				return id.match({
 					"some": [any val, TodoList this] => this.getTask.render(val), 
 					"none": [] => self.getTask.render(NULL)
 				}, self);
 			},
-			"POST": [TodoList self, HTTPMessage message] => {
-				return self.postTask.render(message.body);
-			},
 			"DELETE": [TodoList self, HTTPMessage __message, ? string id] => {
 			    return id.match({
 					"some": [string taskID, TodoList this] => this.deleteTask.render(taskID),
 					"none": [] => res.reject(Error("ID not passed")) 
 				}, self);
+			},
+			"POST": [TodoList self, HTTPMessage message] => {
+				return self.postTask.render(message.body);
 			}
 		};
 	};
