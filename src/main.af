@@ -1,6 +1,7 @@
 .needs <std>
 import Middleware from "HTTP/Middleware";
-import HTTPResponce, HTTPMessage, NotFoundError, NotImplementedError from "HTTP";
+import HTTPResponce, HTTPMessage, NotFoundError, NotImplementedError, HTTPMethod from "HTTP";
+import {methodToString} from "HTTP" under http;
 import Server from "HTTP/Server";
 import GET, POST, PUT, DELETE from "HTTP/Endpoints";
 import Endpoints from "HTTP/Endpoint";
@@ -25,6 +26,12 @@ class TodoList signs Server {
 	PostTask postTask = new PostTask();
 	DeleteTask deleteTask = new DeleteTask();
 
+	// HTTPMessage log(HTTPMessage request) : Middleware {
+	// 	let method = http.methodToString(request.method);
+	// 	str.print(`Request: {method} {request.endpoint}\n`);
+	// 	return request;
+	// };
+
 	Result home() : GET("/") {
 		let responce = new HTTPResponce(my.indexMarkup.render(), "200", "OK");
 		responce.addHeader("Content-Type", "text/html");
@@ -40,17 +47,14 @@ class TodoList signs Server {
 	Map tasks() : Endpoints("/api/tasks") {
 		return {
 			"GET": [TodoList self, HTTPMessage message] => {
-				str.print("Get Task\n");
 				adr id = message.query.get("id").or(NULL);
 				if id != NULL str.print(`ID: ${id}\n`);
 				return self.getTask.render(id);
 			},
 			"POST": [TodoList self, HTTPMessage message] => {
-        		str.print("Post Task\n");
 				return self.postTask.render(message.body);
 			},
 			"DELETE": [TodoList self, HTTPMessage message] => {
-        		str.print("Delete Task\n");
 			    return message.query.get("id").match({
 					"some": [adr taskID, TodoList this] => this.deleteTask.render(taskID),
 					"none": [] => res.reject(Error("ID not passed")) 
