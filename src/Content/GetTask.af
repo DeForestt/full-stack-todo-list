@@ -3,7 +3,7 @@
 import Content from "Web/Content";
 import Result from "Utils/Result";
 import { accept, reject } from "Utils/Result" under res;
-import HTTPResponce from "HTTP";
+import HTTPResponce, NotFoundError from "HTTP";
 import {getInt, getList} from "JSON/Parse" under json;
 import Error from "Utils/Error";
 import string from "String";
@@ -17,8 +17,9 @@ class GetTask signs Content {
   };
 
   
-	Result render(? adr id) {
+	Result render(? any id) {
 		my.loadFile("./data/todo.json");
+		my.content = my.cleanContent;
 
 		if id.isSome() == false {
 			let responce = new HTTPResponce(my.content.cstr(), "200", "OK");
@@ -26,52 +27,42 @@ class GetTask signs Content {
 			return res.accept(responce);
 		};
 
-		adr id = id.or(NULL);
-		string id = id;
-
+		string id = id.or(`1`);
+		
 		// find the task with id;
-		int id = id.trim('$').toInt().value(
+		int id = id.toInt().value(
 			[] => return -1
 		);
 
-		if (id < 0) | (id >= my.content.len()) {
-			let responce = new HTTPResponce("Task not found", "404", "Not Found");
-			responce.addHeader("Content-Type", "text/plain");
-			return res.accept(responce);
-		};
-
-    str.print("Get here");
 		
-		List content = json.getList("tasks", my.content);
 
-		if content == NULL 
-			res.reject(new Error("tasks returned NULL Content List"));
-
-    str.print("get here");
-		if content.getCount() == 0 {
-			let responce = new HTTPResponce("Task not found", "404", "Not Found");
-			responce.addHeader("Content-Type", "text/plain");
-			return res.accept(responce);
+		if (id < 0) {
+			str.print("Not found...");
+			return res.reject(new NotFoundError(`Id {id} mot found`));
 		};
 
-		bool found = false;
-		for int i = 0; i < content.getCount(); i++ {
-			my.content = content.get(i).match({
-        "ok": [string c] => return c,
-        "_": [] => panic("error")
-        });
+		List tasks = json.getList("tasks", my.content);
+
+
+		if tasks == NULL {
+			return res.reject(new Error("tasks returned NULL Content List"));
+		};
+
+		if tasks.getCount() == 0 {
+			return res.reject(new NotFoundError("No tasks found"));
+		};
+		
+		for int i = 0; i < tasks.getCount(); i++ {
+			my.content = tasks.get(i).expect("Failed to get value");
 			int taskID = json.getInt("id", my.content);
 			if taskID == id {
-				let responce = new HTTPResponce(my.content.cstr(), "200", "OK");
-				responce.addHeader("Content-Type", "application/json");
-				return res.accept(responce);
+				let resp = new HTTPResponce(my.content.cstr(), "201", "Found");
+				resp.addHeader("ContentType", "Application/JSON");
+				return res.accept(resp);
 			};
 		};
 
-		if !found {
-			let responce = new HTTPResponce("Task not found", "404", "Not Found");
-			responce.addHeader("Content-Type", "text/plain");
-			return res.accept(responce);
-		};
+		str.print("Not found...");
+		return res.reject(new NotFoundError("Task not found"));
 	};
 };

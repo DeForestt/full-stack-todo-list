@@ -26,12 +26,6 @@ class TodoList signs Server {
 	PostTask postTask = new PostTask();
 	DeleteTask deleteTask = new DeleteTask();
 
-	// HTTPMessage log(HTTPMessage request) : Middleware {
-	// 	let method = http.methodToString(request.method);
-	// 	str.print(`Request: {method} {request.endpoint}\n`);
-	// 	return request;
-	// };
-
 	Result home() : GET("/") {
 		let responce = new HTTPResponce(my.indexMarkup.render(), "200", "OK");
 		responce.addHeader("Content-Type", "text/html");
@@ -44,22 +38,22 @@ class TodoList signs Server {
 		return res.accept(responce);
 	};
 
-	Map tasks() : Endpoints("/api/tasks") {
+	Map tasks() : Endpoints("/api/tasks/:*") {
 		return {
-			"GET": [TodoList self, HTTPMessage message] => {
-				adr id = message.query.get("id").or(NULL);
-				if id != NULL str.print(`ID: ${id}\n`);
-				return self.getTask.render(id);
+			"GET": [TodoList self, HTTPMessage __message, ? any id] => {
+				return id.match({
+					"some": [any val, TodoList this] => this.getTask.render(val), 
+					"none": [] => self.getTask.render(NULL)
+				}, self);
 			},
 			"POST": [TodoList self, HTTPMessage message] => {
 				return self.postTask.render(message.body);
 			},
-			"DELETE": [TodoList self, HTTPMessage message] => {
-			    return message.query.get("id").match({
-					"some": [adr taskID, TodoList this] => this.deleteTask.render(taskID),
+			"DELETE": [TodoList self, HTTPMessage __message, ? string id] => {
+			    return id.match({
+					"some": [string taskID, TodoList this] => this.deleteTask.render(taskID),
 					"none": [] => res.reject(Error("ID not passed")) 
 				}, self);
-				// curl command for delete... curl -X DELETE http://localhost:8080/api/tasks?id=1
 			}
 		};
 	};

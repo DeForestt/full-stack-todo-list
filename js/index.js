@@ -3,7 +3,7 @@ const getTodoList = async () => {
 }
 
 const deleteTodoList = async (id) => {
-    return await fetch(`http://localhost:8080/api/tasks?id=${id}`, {
+    return await fetch(`http://localhost:8080/api/tasks/${id}`, {
         method: "DELETE"
     })
 }
