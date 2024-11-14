@@ -26,9 +26,23 @@ class TodoList signs Server {
 	PostTask postTask = new PostTask();
 	DeleteTask deleteTask = new DeleteTask();
 
+	HTTPMessage log(HTTPMessage msg) : Middleware {
+		let method = http.methodToString(msg.method);
+		str.print(`[{method}] {msg.endpoint}\n`);
+		return msg;
+	};
+
 	Result home() : GET("/") {
 		let responce = new HTTPResponce(my.indexMarkup.render(), "200", "OK");
 		responce.addHeader("Content-Type", "text/html");
+		return res.accept(responce);
+	};
+
+	// super long endpoint to test multi threading...
+	Result long() : GET("/long") {
+		str.print(NULL);
+		let responce = new HTTPResponce("This is a long response", "200", "OK");
+		responce.addHeader("Content-Type", "text/plain");
 		return res.accept(responce);
 	};
 

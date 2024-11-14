@@ -1,4 +1,5 @@
 const getTodoList = async () => {
+    fetch("http://localhost:8080/long")
     return await fetch("http://localhost:8080/api/tasks")
 }
 
