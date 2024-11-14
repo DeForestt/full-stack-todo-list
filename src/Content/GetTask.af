@@ -17,20 +17,17 @@ class GetTask signs Content {
   };
 
   
-	Result render(adr ids) {
+	Result render(? adr id) {
 		my.loadFile("./data/todo.json");
 
-		str.print(`getting task...\n`);
-
-		if ids == NULL {
+		if id.isSome() == false {
 			let responce = new HTTPResponce(my.content.cstr(), "200", "OK");
 			responce.addHeader("Content-Type", "application/json");
 			return res.accept(responce);
 		};
 
-		str.print(`Get Task with id: ${ids}\n`);
-
-		string id = ids;
+		adr id = id.or(NULL);
+		string id = id;
 
 		// find the task with id;
 		int id = id.trim('$').toInt().value(
