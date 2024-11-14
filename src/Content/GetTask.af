@@ -11,24 +11,28 @@ import List from "Collections";
 import Map from "Utils/Map";
 import {print} from "String" under str;
 
-
 class GetTask signs Content {
   GetTask init() {
     return my;
   };
 
   
-	Result render(adr id) {
+	Result render(adr ids) {
 		my.loadFile("./data/todo.json");
 
-		if id == NULL {
+		str.print(`getting task...\n`);
+
+		if ids == NULL {
 			let responce = new HTTPResponce(my.content.cstr(), "200", "OK");
 			responce.addHeader("Content-Type", "application/json");
 			return res.accept(responce);
 		};
 
+		str.print(`Get Task with id: ${ids}\n`);
+
+		string id = ids;
+
 		// find the task with id;
-		string id = id;
 		int id = id.trim('$').toInt().value(
 			[] => return -1
 		);

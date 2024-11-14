@@ -39,10 +39,10 @@ class DeleteTask signs Content {
 			int taskID = json.getInt("id", my.content);
 			if taskID == numericId {
 				tasks.drop(i);
-				break;
+				return data.save(tasks);
 			};
 		};
 
-		return data.save(tasks);
+		return res.reject(new NotFoundError("Task not found"));
 	};
 };

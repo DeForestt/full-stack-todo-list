@@ -41,8 +41,9 @@ class TodoList signs Server {
 		return {
 			"GET": [TodoList self, HTTPMessage message] => {
 				str.print("Get Task\n");
-        		adr taskID = message.query.get("id").or(NULL);
-        		return self.getTask.render(taskID)
+				adr id = message.query.get("id").or(NULL);
+				if id != NULL str.print(`ID: ${id}\n`);
+				return self.getTask.render(id);
 			},
 			"POST": [TodoList self, HTTPMessage message] => {
         		str.print("Post Task\n");
@@ -51,10 +52,11 @@ class TodoList signs Server {
 			"DELETE": [TodoList self, HTTPMessage message] => {
         		str.print("Delete Task\n");
 			    return message.query.get("id").match({
-				"some": [adr taskID, TodoList this] => this.deleteTask.render(taskID),
-				"none": [] => res.reject(Error("ID not passed")) 
-			}, self);
-			} 
+					"some": [adr taskID, TodoList this] => this.deleteTask.render(taskID),
+					"none": [] => res.reject(Error("ID not passed")) 
+				}, self);
+				// curl command for delete... curl -X DELETE http://localhost:8080/api/tasks?id=1
+			}
 		};
 	};
 
