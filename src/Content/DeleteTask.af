@@ -6,7 +6,7 @@ import {accept, reject} from "Utils/Result" under res;
 import List from "Collections";
 import Content from "Web/Content";
 import string from "String";
-import HTTPResponce from "HTTP";
+import HTTPResponce, NotFoundError, BadRequestError from "HTTP";
 import {save} from "./src/Data" under data;
 import {getList, getInt} from "JSON/Parse" under json;
 
@@ -19,7 +19,7 @@ class DeleteTask signs Content {
 		);
 
 		if numericId < 0 {
-			return res.reject(new Error(`Invalid id {id}`));
+			return res.reject(new BadRequestError("Invalid ID"));
 		};
 
 		my.loadFile("./data/todo.json");
@@ -31,7 +31,7 @@ class DeleteTask signs Content {
 		};
 
 		if tasks.getCount() == 0 {
-			return res.reject(new Error("No tasks found"));
+			return res.reject(new NotFoundError("No tasks found"));
 		};
 		
 		for int i = 0; i < tasks.getCount(); i++ {
