@@ -9,7 +9,7 @@ import Error from "Utils/Error";
 import string from "String";
 import List from "Collections";
 import Map from "Utils/Map";
-import {print} from "String" under str;
+import { info, warning } from "./src/flat_log" under log;
 
 class GetTask signs Content {
   GetTask init() {
@@ -37,7 +37,7 @@ class GetTask signs Content {
 		
 
 		if (id < 0) {
-			str.print("Not found...");
+			log.warning(`Invalid id: {id}`);
 			return res.reject(new NotFoundError(`Id {id} mot found`));
 		};
 
@@ -62,7 +62,7 @@ class GetTask signs Content {
 			};
 		};
 
-		str.print("Not found...");
+		log.warning(`Task {id} not found`);
 		return res.reject(new NotFoundError("Task not found"));
 	};
 };

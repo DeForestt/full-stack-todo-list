@@ -7,7 +7,6 @@ import GET, POST, PUT, DELETE from "HTTP/Endpoints";
 import Endpoints from "HTTP/Endpoint";
 import Content from "Web/Content";
 import string from "String";
-import {print} from "String" under str;
 import Result from "Utils/Result";
 import {accept, reject} from "Utils/Result" under res;
 import GetTask from "./src/Content/GetTask";
@@ -17,6 +16,7 @@ import Index from "./src/Content/UI/Index";
 import PlainContent from "./src/Content/UI/PlainContent";
 import Map from "Utils/Map";
 import Error from "Utils/Error";
+import { info } from "./src/flat_log" under log;
 
 
 class TodoList signs Server {
@@ -26,23 +26,19 @@ class TodoList signs Server {
 	PostTask postTask = new PostTask();
 	DeleteTask deleteTask = new DeleteTask();
 
-	HTTPMessage log(HTTPMessage msg) : Middleware {
-		let method = http.methodToString(msg.method);
-		str.print(`[{method}] {msg.endpoint}\n`);
-		return msg;
+	Map logRequest() : Middleware {
+		return {
+			"after": [Server __s, HTTPMessage req, HTTPResponce r] => {
+				log.info(`[{http.methodToString(req.method)}] {req.endpoint}\n`);
+				log.info(`\t{r.getStatusCode()} {r.getStatusMessage()}\n`);
+				return r;
+			}
+		};
 	};
 
 	Result home() : GET("/") {
 		let responce = new HTTPResponce(my.indexMarkup.render(), "200", "OK");
 		responce.addHeader("Content-Type", "text/html");
-		return res.accept(responce);
-	};
-
-	// super long endpoint to test multi threading...
-	Result long() : GET("/long") {
-		str.print(NULL);
-		let responce = new HTTPResponce("This is a long response", "200", "OK");
-		responce.addHeader("Content-Type", "text/plain");
 		return res.accept(responce);
 	};
 
