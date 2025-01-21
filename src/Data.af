@@ -7,6 +7,8 @@ import Result from "Utils/Result";
 import {accept, reject} from "Utils/Result" under res;
 import List from "Collections";
 import Error from "Utils/Error";
+import Function from "Utils/Functions";
+import Defer from "Utils/Defer";
 
 any write(adr data, File file){
     return file.write(data);
@@ -14,6 +16,7 @@ any write(adr data, File file){
 
 export Result save(List tasks){
     File saveFile = fs.createFile("./data/todo.json").expect("Failed to create save file");
+    let __fileDefer = new Defer(Function([File f] => f.close(), saveFile));
 
     write("{\"tasks\": [", saveFile);
 
@@ -25,7 +28,6 @@ export Result save(List tasks){
     );
 
     write("]}", saveFile);
-    saveFile.close();
 
     return res.accept(new HTTPResponce("Update Saved", "200", "OK"));
 };
