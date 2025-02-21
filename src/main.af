@@ -31,7 +31,7 @@ class TodoList signs Server {
 			"after": [Server __s, HTTPMessage req, HTTPResponce r] => {
 				log.info(`[{http.methodToString(req.method)}] {req.endpoint}\n`);
 				log.info(`\t{r.getStatusCode()} {r.getStatusMessage()}\n`);
-				return r;
+				r;
 			}
 		};
 	};
@@ -39,18 +39,17 @@ class TodoList signs Server {
 	Result home() : GET("/") {
 		let responce = new HTTPResponce(my.indexMarkup.render(), "200", "OK");
 		responce.addHeader("Content-Type", "text/html");
-		return res.accept(responce);
+		res.accept(responce)
 	};
 
 	Result indexJavaScript() : GET("/js/index.js") {
 		let responce = new HTTPResponce(my.indexJS.render(), "200", "OK");
 		responce.addHeader("Content-Type", "text/javascript");
-		return res.accept(responce);
+		res.accept(responce)
 	};
 
 	Map tasks() : Endpoints("/api/tasks/:*") {
 		return {
-
 			"GET": [TodoList self, HTTPMessage __message, ? any id] => {
 				return id.match({
 					"some": [any val, TodoList this] => this.getTask.render(val), 

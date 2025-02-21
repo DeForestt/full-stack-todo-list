@@ -30,15 +30,16 @@ class GetTask signs Content {
 		string id = id.or(`1`);
 		
 		// find the task with id;
-		int id = id.toInt().value(
-			[] => return -1
-		);
+		int id = id.toInt().match({
+			"ok": [int val] => val,
+			"_": [] => return -1
+		});
 
 		
 
 		if (id < 0) {
 			log.warning(`Invalid id: {id}`);
-			return res.reject(new NotFoundError(`Id {id} mot found`));
+			res.accept(new HTTPResponce("Invalid ID", "400", "Bad Request"))
 		};
 
 		List tasks = json.getList("tasks", my.content);
@@ -63,6 +64,6 @@ class GetTask signs Content {
 		};
 
 		log.warning(`Task {id} not found`);
-		return res.reject(new NotFoundError("Task not found"));
+		res.accept(new HTTPResponce(`Task {id} not found`.cstr(), "404", "Not Found"));
 	};
 };
