@@ -11,7 +11,7 @@ import {save} from "./src/Data" under data;
 import {getList, getInt} from "JSON/Parse" under json;
 
 class DeleteTask signs Content {
-	Result render(string id) {
+	fn render(string id) -> {
 		// we need to trim the $ from the id because of a bug
 		// in the router that sometimes appends a $ to query strings
 		int numericId = id.trim('$').toInt().value(

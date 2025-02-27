@@ -4,61 +4,89 @@ import Content from "Web/Content";
 import Result from "Utils/Result";
 import { accept, reject } from "Utils/Result" under res;
 import HTTPResponce, NotFoundError from "HTTP";
-import {getInt, getList} from "JSON/Parse" under json;
-import Error from "Utils/Error";
+import { getInt, getList } from "JSON/Parse" under json;
 import string from "String";
 import List from "Collections";
 import Map from "Utils/Map";
 import Scroller from "Collections/Scroller";
 import { info, warning } from "./src/flat_log" under log;
+import Option from "Utils/Option";
+import { some, none } from "Utils/Option" under opt;
 
 class GetTask signs Content {
-	GetTask init() {
-		return my;
+    GetTask init() {
+        return my;
+    };
+	
+	fn getTask(List tasks, int index) -> string? {
+
+		const string ret =  tasks.get(index).match({
+			"ok": [string task] => task,
+			"_": [] => {
+				log.warning("Failed to get task\n");
+				return NULL;
+			}
+		});
+
+		return ret;		
 	};
 
-	Result findTask(int val) {
-		let tasks = json.getList("tasks", my.content);
-		if tasks == NULL {
-			log.warning(`Failed to parse json... \n{my.content}\n`);
-			return res.accept(new HTTPResponce("No tasks found", "404", "Not Found"));
-		};
+    Result findTask(int val) {
+        let tasks = json.getList("tasks", my.content);
+        if (tasks == NULL) {
+            log.warning(`Failed to parse json... \n{my.content}\n`);
+            return res.accept(new HTTPResponce("No tasks found", "404", "Not Found"));
+        };
 
-		for int i = 0; i < tasks.getCount(); i++ {
-			my.content = tasks.get(i).expect("Failed to get value");
-			int taskID = json.getInt("id", my.content);
-			if taskID == val {
-				let resp = new HTTPResponce(my.content.cstr(), "201", "Found");
-				resp.addHeader("ContentType", "Application/JSON");
-				res.accept(resp)
-			};
-		};
-
-		res.accept(new HTTPResponce("Task not found", "404", "Not Found"))
-	};
-
-	Result render(? any id) {
-		log.info("GetTask.render\n");
-		my.loadFile("./data/todo.json");
-		my.content = my.cleanContent;
-
-		id.match({
-			"none": [GetTask self] => {
-				log.info("GetTask.render: no id\n");
-				let responce = new HTTPResponce(self.content.cstr(), "200", "OK");
-				responce.addHeader("Content-Type", "application/json");
-				res.accept(responce)
-			},
-			"some": [string value, GetTask self] => {
-				log.info(`GetTask.render: id = {value}\n`);
-				return value.toInt().match({
-					"ok": [int val, GetTask this] => this.findTask(val),
-					"_": [] => {
-						log.warning("Failed to convert id to int\n");
-						res.accept(new HTTPResponce("Failed to convert id to int", "404", "Not Found"))
+        for int i = 0; i < tasks.getCount(); i++ { // no parentheses needed for the loop condition
+            // Use a local variable to avoid overwriting global state
+            Map task = my.getTask(tasks, i).match({
+				"some": [string task] => {
+					return {
+						"id": json.getInt("id", task),
+						"val": task
 					}
-				}, self);
-			},
-		}, my)
-	}
+				},
+				"none": [] => return {}
+			});
+
+			int taskID = task("id").or(-1);
+			string taskContent = task("val").or(``);
+			taskContent.get(); // somthing is up with the refcounting on the string... I had to ad this here to stop it from getting deleted
+
+            if (taskID == val) {
+				adr v = taskContent.cstr();
+                let resp = new HTTPResponce(v, "200", "OK"); // Use 200 for a successful lookup
+                resp.addHeader("Content-Type", "application/json");
+                res.accept(resp)  // Implicit return as per language semantics
+            };
+        };
+
+        res.accept(new HTTPResponce("Task not found", "404", "Not Found"))
+    };
+
+    Result render(? any id) {
+        log.info("GetTask.render\n");
+        my.loadFile("./data/todo.json");
+        my.content = my.cleanContent;
+
+        id.match({
+            "none": [GetTask self] => {
+                log.info("GetTask.render: no id\n");
+                let responce = new HTTPResponce(self.content.cstr(), "200", "OK");
+                responce.addHeader("Content-Type", "application/json");
+                res.accept(responce)  // Implicit return is acceptable here
+            },
+            "some": [string value, GetTask self] => {
+                log.info(`GetTask.render: id = ${value}\n`);
+                return value.toInt().match({
+                    "ok": [int val, GetTask this] => this.findTask(val),
+                    "_": [] => {
+                        log.warning("Failed to convert id to int\n");
+                        return res.accept(new HTTPResponce("Failed to convert id to int", "400", "Bad Request"));
+                    }
+                }, self);
+            },
+        }, my)
+    }
 };

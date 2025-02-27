@@ -18,63 +18,69 @@ import Map from "Utils/Map";
 import Error from "Utils/Error";
 import { info } from "./src/flat_log" under log;
 
-
-class TodoList signs Server {
-	Index indexMarkup = new Index();
-	PlainContent indexJS = new PlainContent("./js/index.js");
-	GetTask getTask = new GetTask();
-	PostTask postTask = new PostTask();
-	DeleteTask deleteTask = new DeleteTask();
-
-	Map logRequest() : Middleware {
-		return {
-			"after": [Server __s, HTTPMessage req, HTTPResponce r] => {
-				log.info(`[{http.methodToString(req.method)}] {req.endpoint}\n`);
-				log.info(`\t{r.getStatusCode()} {r.getStatusMessage()}\n`);
-				r;
-			}
-		};
-	};
-
-	Result home() : GET("/") {
-		let responce = new HTTPResponce(my.indexMarkup.render(), "200", "OK");
-		responce.addHeader("Content-Type", "text/html");
-		res.accept(responce)
-	};
-
-	Result indexJavaScript() : GET("/js/index.js") {
-		let responce = new HTTPResponce(my.indexJS.render(), "200", "OK");
-		responce.addHeader("Content-Type", "text/javascript");
-		res.accept(responce)
-	};
-
-	Map tasks() : Endpoints("/api/tasks/:*") {
-		return {
-			"GET": [TodoList self, HTTPMessage __message, ? any id] => {
-				return id.match({
-					"some": [any val, TodoList this] => this.getTask.render(val), 
-					"none": [] => self.getTask.render(NULL)
-				}, self);
-			},
-			"DELETE": [TodoList self, HTTPMessage __message, ? string id] => {
-			    return id.match({
-					"some": [string taskID, TodoList this] => this.deleteTask.render(taskID),
-					"none": [] => res.reject(Error("ID not passed")) 
-				}, self);
-			},
-			"POST": [TodoList self, HTTPMessage message] => {
-				return self.postTask.render(message.body);
-			}
-		};
-	};
-
-	TodoList init() {
-		return my;
-	};
+fn errorResponse(string message, ?adr code) -> Result {
+	adr code = code.or(400);
+    let response = new HTTPResponce(message.cstr(), code, "Bad Request");
+    response.addHeader("Content-Type", "application/json");
+    res.accept(response)
 };
 
-int main(){
-	let server = new TodoList();
-	server.listen();
-	return 0;
+class TodoList signs Server {
+    Index indexMarkup = new Index();
+    PlainContent indexJS = new PlainContent("./js/index.js");
+    GetTask getTask = new GetTask();
+    PostTask postTask = new PostTask();
+    DeleteTask deleteTask = new DeleteTask();
+
+    fn logRequest() -> Map : Middleware {
+        return {
+            "after": [Server __s, HTTPMessage req, HTTPResponce r] => {
+                log.info(`[{http.methodToString(req.method)}] {req.endpoint}\n`);
+                log.info(`\t{r.getStatusCode()} {r.getStatusMessage()}\n`);
+                r;
+            }
+        };
+    }
+
+    fn home() -> Result : GET("/") {
+        let responce = new HTTPResponce(my.indexMarkup.render(), "200", "OK");
+        responce.addHeader("Content-Type", "text/html");
+        res.accept(responce)
+    };
+
+    fn indexJavaScript() -> Result  : GET("/js/index.js") {
+        let responce = new HTTPResponce(my.indexJS.render(), "200", "OK");
+        responce.addHeader("Content-Type", "text/javascript");
+        res.accept(responce)
+    };
+
+    fn tasks() -> Map : Endpoints("/api/tasks/:*") {
+        return {
+            "GET": [TodoList self, HTTPMessage __message, ? any id] => {
+                return id.match({
+                    "some": [any val, TodoList this] => this.getTask.render(val), 
+                    "none": [] => self.getTask.render(NULL)
+                }, self);
+            },
+            "DELETE": [TodoList self, HTTPMessage __message, ? string id] => {
+                return id.match({
+                    "some": [string taskID, TodoList this] => this.deleteTask.render(taskID),
+                    "none": [] => errorResponse("ID not passed")
+                }, self);
+            },
+            "POST": [TodoList self, HTTPMessage message] => {
+				return self.postTask.render(message.body);
+			},
+        };
+    };
+
+    fn init() -> TodoList {
+        return my;
+    };
+};
+
+fn main() {
+    let server = new TodoList();
+    server.listen();
+    return 0;
 };
