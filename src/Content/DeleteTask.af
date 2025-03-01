@@ -11,12 +11,13 @@ import {save} from "./src/Data" under data;
 import {getList, getInt} from "JSON/Parse" under json;
 
 class DeleteTask signs Content {
-	fn render(string id) -> {
+	fn render(string id) -> Result {
 		// we need to trim the $ from the id because of a bug
 		// in the router that sometimes appends a $ to query strings
-		int numericId = id.trim('$').toInt().value(
-			[] => return -1
-		);
+		int numericId = id.trim('$').toInt().match({
+			"ok": [int value] => value,
+			"_": [] => return -1,
+		});
 
 		if numericId < 0 {
 			return res.reject(new BadRequestError("Invalid ID"));
