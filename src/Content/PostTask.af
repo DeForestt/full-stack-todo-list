@@ -2,7 +2,7 @@
 import Content from "Web/Content";
 import Result from "Utils/Result";
 import { accept, reject } from "Utils/Result" under res;
-import HTTPResponce from "HTTP";
+import HTTPResponse from "HTTP";
 import JSONObject from "JSON";
 import {getInt, getList, getString} from "JSON/Parse" under json;
 import string from "String";
@@ -29,7 +29,7 @@ class PostTask signs Content {
     if saved.hasError() {
         return saved;
     };
-		return res.accept(new HTTPResponce(obj.toString().cstr(), "200", "OK"));
+		return res.accept(new HTTPResponse(obj.toString().cstr(), "200", "OK"));
 	};
 };
 

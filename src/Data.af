@@ -2,7 +2,7 @@
 import File, FileManager from "files";
 import { createFile } from "files" under fs;
 import string from "String";
-import HTTPResponce from "HTTP";
+import HTTPResponse from "HTTP";
 import Result from "Utils/Result";
 import {accept, reject} from "Utils/Result" under res;
 import List from "Collections";
@@ -29,5 +29,5 @@ export Result save(List tasks){
 
     write("]}", saveFile);
 
-    return res.accept(new HTTPResponce("Update Saved", "200", "OK"));
+    return res.accept(new HTTPResponse("Update Saved", "200", "OK"));
 };

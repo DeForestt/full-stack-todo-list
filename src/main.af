@@ -1,6 +1,6 @@
 .needs <std>
 import Middleware from "HTTP/Middleware";
-import HTTPResponce, HTTPMessage, NotFoundError, NotImplementedError, HTTPMethod from "HTTP";
+import HTTPResponse, HTTPMessage, NotFoundError, NotImplementedError, HTTPMethod from "HTTP";
 import {methodToString} from "HTTP" under http;
 import Server from "HTTP/Server";
 import GET, POST, PUT, DELETE from "HTTP/Endpoints";
@@ -20,7 +20,7 @@ import { info } from "./src/flat_log" under log;
 
 fn errorResponse(string message, ?adr code) -> Result {
 	adr code = code.or(400);
-    let response = new HTTPResponce(message.cstr(), code, "Bad Request");
+    let response = new HTTPResponse(message.cstr(), code, "Bad Request");
     response.addHeader("Content-Type", "application/json");
     res.accept(response)
 };
@@ -34,7 +34,7 @@ class TodoList signs Server {
 
     fn logRequest() -> Map : Middleware {
         return {
-            "after": [Server __s, HTTPMessage req, HTTPResponce r] => {
+            "after": fn (Server __s, HTTPMessage req, HTTPResponse r) -> HTTPResponse {
                 log.info(`[{http.methodToString(req.method)}] {req.endpoint}\n`);
                 log.info(`\t{r.getStatusCode()} {r.getStatusMessage()}\n`);
                 r;
@@ -43,13 +43,13 @@ class TodoList signs Server {
     }
 
     fn home() -> Result : GET("/") {
-        let responce = new HTTPResponce(my.indexMarkup.render(), "200", "OK");
+        let responce = new HTTPResponse(my.indexMarkup.render(), "200", "OK");
         responce.addHeader("Content-Type", "text/html");
         res.accept(responce)
     };
 
     fn indexJavaScript() -> Result  : GET("/js/index.js") {
-        let responce = new HTTPResponce(my.indexJS.render(), "200", "OK");
+        let responce = new HTTPResponse(my.indexJS.render(), "200", "OK");
         responce.addHeader("Content-Type", "text/javascript");
         res.accept(responce)
     };

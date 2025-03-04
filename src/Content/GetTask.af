@@ -3,7 +3,7 @@
 import Content from "Web/Content";
 import Result from "Utils/Result";
 import { accept, reject } from "Utils/Result" under res;
-import HTTPResponce, NotFoundError from "HTTP";
+import HTTPResponse, NotFoundError from "HTTP";
 import { getInt, getList } from "JSON/Parse" under json;
 import string from "String";
 import List from "Collections";
@@ -35,7 +35,7 @@ class GetTask signs Content {
         let tasks = json.getList("tasks", my.content);
         if (tasks == NULL) {
             log.warning(`Failed to parse json... \n{my.content}\n`);
-            return res.accept(new HTTPResponce("No tasks found", "404", "Not Found"));
+            return res.accept(new HTTPResponse("No tasks found", "404", "Not Found"));
         };
 
         for int i = 0; i < tasks.getCount(); i++ { // no parentheses needed for the loop condition
@@ -56,13 +56,13 @@ class GetTask signs Content {
 
             if (taskID == val) {
 				adr v = taskContent.cstr();
-                let resp = new HTTPResponce(v, "200", "OK"); // Use 200 for a successful lookup
+                let resp = new HTTPResponse(v, "200", "OK"); // Use 200 for a successful lookup
                 resp.addHeader("Content-Type", "application/json");
                 res.accept(resp)  // Implicit return as per language semantics
             };
         };
 
-        res.accept(new HTTPResponce("Task not found", "404", "Not Found"))
+        res.accept(new HTTPResponse("Task not found", "404", "Not Found"))
     };
 
     Result render(? any id) {
@@ -73,7 +73,7 @@ class GetTask signs Content {
         id.match({
             "none": [GetTask self] => {
                 log.info("GetTask.render: no id\n");
-                let responce = new HTTPResponce(self.content.cstr(), "200", "OK");
+                let responce = new HTTPResponse(self.content.cstr(), "200", "OK");
                 responce.addHeader("Content-Type", "application/json");
                 res.accept(responce)  // Implicit return is acceptable here
             },
@@ -83,7 +83,7 @@ class GetTask signs Content {
                     "ok": [int val, GetTask this] => this.findTask(val),
                     "_": [] => {
                         log.warning("Failed to convert id to int\n");
-                        return res.accept(new HTTPResponce("Failed to convert id to int", "400", "Bad Request"));
+                        return res.accept(new HTTPResponse("Failed to convert id to int", "400", "Bad Request"));
                     }
                 }, self);
             },

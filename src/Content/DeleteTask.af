@@ -6,7 +6,7 @@ import {accept, reject} from "Utils/Result" under res;
 import List from "Collections";
 import Content from "Web/Content";
 import string from "String";
-import HTTPResponce, NotFoundError, BadRequestError from "HTTP";
+import HTTPResponse, NotFoundError, BadRequestError from "HTTP";
 import {save} from "./src/Data" under data;
 import {getList, getInt} from "JSON/Parse" under json;
 
