@@ -21,7 +21,7 @@ export Result save(List tasks){
     write("{\"tasks\": [", saveFile);
 
     tasks.forEach(
-      [string task, int i, File f] => {
+      fn (string task, int i, File f) {
         if i != 0 write(",", f);
         write(task.cstr(), f);
       }, saveFile

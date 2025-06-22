@@ -15,8 +15,8 @@ class DeleteTask signs Content {
 		// we need to trim the $ from the id because of a bug
 		// in the router that sometimes appends a $ to query strings
 		int numericId = id.trim('$').toInt().match({
-			"ok": [int value] => value,
-			"_": [] => return -1,
+			"ok": fn (int value) value,
+			"_": fn () return -1
 		});
 
 		if numericId < 0 {

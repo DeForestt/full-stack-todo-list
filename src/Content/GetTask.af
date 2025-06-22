@@ -68,9 +68,10 @@ class GetTask signs Content {
     Result render(? any id) {
         log.info("GetTask.render\n");
         my.loadFile("./data/todo.json");
+        log.info("GetTask.render:  2\n");
         my.content = my.cleanContent;
 
-        id.match({
+        return id.match({
             "none": [GetTask self] => {
                 log.info("GetTask.render: no id\n");
                 let responce = new HTTPResponse(self.content.cstr(), "200", "OK");
@@ -87,6 +88,6 @@ class GetTask signs Content {
                     }
                 }, self);
             },
-        }, my)
+        }, my);
     }
 };

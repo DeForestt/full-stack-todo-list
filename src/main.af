@@ -18,8 +18,8 @@ import Map from "Utils/Map";
 import Error from "Utils/Error";
 import { info } from "./src/flat_log" under log;
 
-fn errorResponse(string message, ?adr code) -> Result {
-	adr code = code.or(400);
+fn errorResponse(string message, ?adr code) {
+    adr code = code.or(400);
     let response = new HTTPResponse(message.cstr(), code, "Bad Request");
     response.addHeader("Content-Type", "application/json");
     res.accept(response)
@@ -34,10 +34,10 @@ class TodoList signs Server {
 
     fn logRequest() -> Map : Middleware {
         return {
-            "after": fn (Server __s, HTTPMessage req, HTTPResponse r) -> HTTPResponse {
+            "after": fn (Server __s, HTTPMessage req, HTTPResponse r) {
                 log.info(`[{http.methodToString(req.method)}] {req.endpoint}\n`);
                 log.info(`\t{r.getStatusCode()} {r.getStatusMessage()}\n`);
-                r;
+                r
             }
         };
     }
@@ -48,7 +48,7 @@ class TodoList signs Server {
         res.accept(responce)
     };
 
-    fn indexJavaScript() -> Result  : GET("/js/index.js") {
+    fn indexJavaScript() -> Result : GET("/js/index.js") {
         let responce = new HTTPResponse(my.indexJS.render(), "200", "OK");
         responce.addHeader("Content-Type", "text/javascript");
         res.accept(responce)
@@ -56,25 +56,26 @@ class TodoList signs Server {
 
     fn tasks() -> Map : Endpoints("/api/tasks/:*") {
         return {
-            "GET": [TodoList self, HTTPMessage __message, ? any id] => {
-                return id.match({
-                    "some": [any val, TodoList this] => this.getTask.render(val), 
-                    "none": [] => self.getTask.render(NULL)
-                }, self);
+            "GET": fn (TodoList self, HTTPMessage __message, ? any id) {
+                id.match({
+                    "some": fn (any val, TodoList this) this.getTask.render(val), 
+                    "none": fn () self.getTask.render(NULL)
+                }, self)
             },
-            "DELETE": [TodoList self, HTTPMessage __message, ? string id] => {
-                return id.match({
-                    "some": [string taskID, TodoList this] => this.deleteTask.render(taskID),
-                    "none": [] => errorResponse("ID not passed")
-                }, self);
+            "DELETE": fn (TodoList self, HTTPMessage __message, ? string id) {
+                id.match({
+                    "some": fn (string taskID, TodoList this) this.deleteTask.render(taskID),
+                    "none": fn () errorResponse("ID not passed")
+                }, self)
             },
-            "POST": [TodoList self, HTTPMessage message] => {
-				return self.postTask.render(message.body);
-			},
+            "POST": fn (TodoList self, HTTPMessage message) {
+                log.info("POST request to /api/tasks");
+                self.postTask.render(message.body)
+            },
         };
     };
 
-    fn init() -> TodoList {
+    fn init() -> Self {
         return my;
     };
 };
